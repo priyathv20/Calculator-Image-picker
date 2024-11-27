@@ -28,7 +28,7 @@ class _ImagePickersState extends State<ImagePickers> {
     }
   }
 
-//
+  ///
   Future pickImageByCamera() async {
     try {
       final image = await ImagePicker().pickImage(source: ImageSource.camera);
