@@ -1,66 +1,14 @@
-// Define the Calculator StatefulWidget
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'calculatorGetx.dart';
 
-class Calculator extends StatefulWidget {
-  const Calculator({Key? key}) : super(key: key);
-
-  @override
-  _CalculatorState createState() => _CalculatorState();
-}
-
-// The existing _CalculatorState class
-class _CalculatorState extends State<Calculator> {
-  String _output = "0";
-  String _outputHistory = "";
-  double _num1 = 0;
-  double _num2 = 0;
-  String _operand = "";
-
-  void _buttonPressed(String buttonText) {
-    if (buttonText == "C") {
-      _output = "0";
-      _outputHistory = "";
-      _num1 = 0;
-      _num2 = 0;
-      _operand = "";
-    } else if (buttonText == "+" ||
-        buttonText == "-" ||
-        buttonText == "×" ||
-        buttonText == "÷") {
-      _num1 = double.parse(_output);
-      _operand = buttonText;
-      _outputHistory += "$_num1 $_operand ";
-      _output = "0";
-    } else if (buttonText == "=") {
-      _num2 = double.parse(_output);
-      if (_operand == "+") {
-        _output = (_num1 + _num2).toString();
-      } else if (_operand == "-") {
-        _output = (_num1 - _num2).toString();
-      } else if (_operand == "×") {
-        _output = (_num1 * _num2).toString();
-      } else if (_operand == "÷") {
-        _output = (_num1 / _num2).toString();
-      } else if (_operand == "%") {
-        _output = (_num1 % _num2).toString();
-      }
-      _outputHistory += "$_num2 = $_output\n";
-      _operand = "";
-    } else {
-      if (_output == "0") {
-        _output = buttonText;
-      } else {
-        _output += buttonText;
-      }
-    }
-    setState(() {
-      _output;
-      _outputHistory;
-    });
-  }
+class CalculatorGetx extends StatelessWidget {
+  const CalculatorGetx({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final CalculatorController controller = Get.put(CalculatorController());
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -68,7 +16,7 @@ class _CalculatorState extends State<Calculator> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'RadicalStart',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
@@ -82,11 +30,11 @@ class _CalculatorState extends State<Calculator> {
                       borderRadius: BorderRadius.circular(30)),
                   child: Column(
                     children: [
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Container(
+                          SizedBox(
                             width: MediaQuery.of(context).size.width * 0.75,
                             child: Table(
                               children: [
@@ -96,17 +44,20 @@ class _CalculatorState extends State<Calculator> {
                                         "C",
                                         const Color.fromARGB(
                                             255, 216, 209, 209),
-                                        Colors.black),
+                                        Colors.black,
+                                        controller),
                                     _buildButton(
                                         "÷",
                                         const Color.fromARGB(
                                             255, 216, 209, 209),
-                                        Colors.black),
+                                        Colors.black,
+                                        controller),
                                     _buildButton(
                                         "%",
                                         const Color.fromARGB(
                                             255, 216, 209, 209),
-                                        Colors.black),
+                                        Colors.black,
+                                        controller),
                                   ],
                                 ),
                                 TableRow(
@@ -115,17 +66,20 @@ class _CalculatorState extends State<Calculator> {
                                         "7",
                                         const Color.fromARGB(
                                             255, 223, 230, 243),
-                                        Colors.black),
+                                        Colors.black,
+                                        controller),
                                     _buildButton(
                                         "8",
                                         const Color.fromARGB(
                                             255, 223, 230, 243),
-                                        Colors.black),
+                                        Colors.black,
+                                        controller),
                                     _buildButton(
                                         "9",
                                         const Color.fromARGB(
                                             255, 223, 230, 243),
-                                        Colors.black),
+                                        Colors.black,
+                                        controller),
                                   ],
                                 ),
                                 TableRow(
@@ -134,17 +88,20 @@ class _CalculatorState extends State<Calculator> {
                                         "4",
                                         const Color.fromARGB(
                                             255, 223, 230, 243),
-                                        Colors.black),
+                                        Colors.black,
+                                        controller),
                                     _buildButton(
                                         "5",
                                         const Color.fromARGB(
                                             255, 223, 230, 243),
-                                        Colors.black),
+                                        Colors.black,
+                                        controller),
                                     _buildButton(
                                         "6",
                                         const Color.fromARGB(
                                             255, 223, 230, 243),
-                                        Colors.black),
+                                        Colors.black,
+                                        controller),
                                   ],
                                 ),
                                 TableRow(
@@ -153,17 +110,20 @@ class _CalculatorState extends State<Calculator> {
                                         "1",
                                         const Color.fromARGB(
                                             255, 223, 230, 243),
-                                        Colors.black),
+                                        Colors.black,
+                                        controller),
                                     _buildButton(
                                         "2",
                                         const Color.fromARGB(
                                             255, 223, 230, 243),
-                                        Colors.black),
+                                        Colors.black,
+                                        controller),
                                     _buildButton(
                                         "3",
                                         const Color.fromARGB(
                                             255, 223, 230, 243),
-                                        Colors.black),
+                                        Colors.black,
+                                        controller),
                                   ],
                                 ),
                                 TableRow(
@@ -172,54 +132,57 @@ class _CalculatorState extends State<Calculator> {
                                         ".",
                                         const Color.fromARGB(
                                             255, 223, 230, 243),
-                                        Colors.black),
+                                        Colors.black,
+                                        controller),
                                     _buildButton(
                                         "0",
                                         const Color.fromARGB(
                                             255, 223, 230, 243),
-                                        Colors.black),
+                                        Colors.black,
+                                        controller),
                                     _buildButton(
                                         "00",
                                         const Color.fromARGB(
                                             255, 223, 230, 243),
-                                        Colors.black),
+                                        Colors.black,
+                                        controller),
                                   ],
                                 ),
                               ],
                             ),
                           ),
-                          Container(
+                          SizedBox(
                             width: MediaQuery.of(context).size.width * 0.2,
                             child: Table(
                               children: [
                                 TableRow(
                                   children: [
-                                    _buildButton(
-                                        "/", Colors.orange, Colors.white),
+                                    _buildButton("/", Colors.orange,
+                                        Colors.white, controller),
                                   ],
                                 ),
                                 TableRow(
                                   children: [
-                                    _buildButton(
-                                        "×", Colors.orange, Colors.white),
+                                    _buildButton("×", Colors.orange,
+                                        Colors.white, controller),
                                   ],
                                 ),
                                 TableRow(
                                   children: [
-                                    _buildButton(
-                                        "-", Colors.orange, Colors.white),
+                                    _buildButton("-", Colors.orange,
+                                        Colors.white, controller),
                                   ],
                                 ),
                                 TableRow(
                                   children: [
-                                    _buildButton(
-                                        "+", Colors.orange, Colors.white),
+                                    _buildButton("+", Colors.orange,
+                                        Colors.white, controller),
                                   ],
                                 ),
                                 TableRow(
                                   children: [
-                                    _buildButton(
-                                        "=", Colors.blue, Colors.white),
+                                    _buildButton("=", Colors.blue, Colors.white,
+                                        controller),
                                   ],
                                 ),
                               ],
@@ -238,11 +201,14 @@ class _CalculatorState extends State<Calculator> {
                           alignment: Alignment.centerRight,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              _output,
-                              style: const TextStyle(
-                                  fontSize: 48.0, fontWeight: FontWeight.bold),
-                            ),
+                            child: Obx(() {
+                              return Text(
+                                controller.output,
+                                style: const TextStyle(
+                                    fontSize: 48.0,
+                                    fontWeight: FontWeight.bold),
+                              );
+                            }),
                           ),
                         ),
                       ),
@@ -257,11 +223,11 @@ class _CalculatorState extends State<Calculator> {
     );
   }
 
-  // buttonPressed(buttonText),
-  Widget _buildButton(String buttonText, Color buttonColor, Color textColor) {
+  Widget _buildButton(String buttonText, Color buttonColor, Color textColor,
+      CalculatorController controller) {
     return InkWell(
       onTap: () {
-        _buttonPressed(buttonText);
+        controller.buttonPressed(buttonText);
       },
       child: Padding(
         padding: const EdgeInsets.all(3),

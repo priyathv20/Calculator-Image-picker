@@ -1,8 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/services.dart';
 
 class ImagePickers extends StatefulWidget {
   const ImagePickers({super.key});
@@ -13,82 +12,71 @@ class ImagePickers extends StatefulWidget {
 
 class _ImagePickersState extends State<ImagePickers> {
   final ImagePicker picker = ImagePicker();
-  File? image;
+  final ValueNotifier<File?> _imageNotifier = ValueNotifier<File?>(null);
+
   Future pickImageByGallery() async {
     try {
       final image = await picker.pickImage(source: ImageSource.gallery);
       if (image == null) return;
       final imageTemp = File(image.path);
-      setState(() {
-        Navigator.pop(context);
-        this.image = imageTemp;
-      });
+      _imageNotifier.value = imageTemp;
+      Navigator.pop(context);
     } on PlatformException catch (e) {
-      print('Filed to pick images: $e');
+      print('Failed to pick image: $e');
     }
   }
 
-  ///
   Future pickImageByCamera() async {
     try {
-      final image = await ImagePicker().pickImage(source: ImageSource.camera);
+      final image = await picker.pickImage(source: ImageSource.camera);
       if (image == null) return;
       final imageTemp = File(image.path);
-      setState(() {
-        Navigator.pop(context);
-        this.image = imageTemp;
-      });
+      _imageNotifier.value = imageTemp;
+      Navigator.pop(context);
     } on PlatformException catch (e) {
-      print('Filed to pick image: $e');
+      print('Failed to pick image: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(height: 30),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  children: [
-                    Text(
-                      'RadicalStart',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    )
-                  ],
-                ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 30),
+            const Padding(
+              padding: EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Text(
+                    'RadicalStart',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
-              SizedBox(height: 30),
-              Container(
-                width: 400,
-                height: 620,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30)),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 50,
-                    ),
-                    Text(
-                      'Upload image',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                    ),
-                    SizedBox(
-                      height: 50,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        _showbuttomSheet();
-                      },
-                      child: Container(
+            ),
+            const SizedBox(height: 30),
+            Container(
+              width: 400,
+              height: 620,
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(30)),
+              child: Column(
+                children: [
+                  const SizedBox(height: 50),
+                  const Text(
+                    'Upload image',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                  const SizedBox(height: 50),
+                  GestureDetector(
+                    onTap: _showBottomSheet,
+                    child: ValueListenableBuilder<File?>(
+                      valueListenable: _imageNotifier,
+                      builder: (context, image, child) {
+                        return Container(
                           height: 340,
                           width: 300,
                           decoration: BoxDecoration(
@@ -99,7 +87,7 @@ class _ImagePickersState extends State<ImagePickers> {
                                   padding: const EdgeInsets.all(90),
                                   child: Container(
                                     height: 10,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                         color: Colors.blueAccent,
                                         shape: BoxShape.circle),
                                     child: const Icon(
@@ -113,73 +101,78 @@ class _ImagePickersState extends State<ImagePickers> {
                                   decoration: BoxDecoration(
                                       image: DecorationImage(
                                           fit: BoxFit.fill,
-                                          image: FileImage(File(image!.path))),
+                                          image: FileImage(File(image.path))),
                                       borderRadius: BorderRadius.circular(30)),
-                                )),
+                                ),
+                        );
+                      },
                     ),
-                    image != null
-                        ? Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  height: 60,
-                                  width: 60,
-                                  decoration: BoxDecoration(
-                                      color: Colors.blue,
-                                      borderRadius: BorderRadius.circular(30)),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      _showbuttomSheet();
-                                    },
-                                    child: Icon(
-                                      Icons.edit_calendar_outlined,
-                                      color: Colors.white,
-                                      size: 30,
+                  ),
+                  ValueListenableBuilder<File?>(
+                    valueListenable: _imageNotifier,
+                    builder: (context, image, child) {
+                      return image != null
+                          ? Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    height: 60,
+                                    width: 60,
+                                    decoration: BoxDecoration(
+                                        color: Colors.blue,
+                                        borderRadius:
+                                            BorderRadius.circular(30)),
+                                    child: GestureDetector(
+                                      onTap: _showBottomSheet,
+                                      child: const Icon(
+                                        Icons.edit_calendar_outlined,
+                                        color: Colors.white,
+                                        size: 30,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(
-                                  width: 30,
-                                ),
-                                Container(
-                                  height: 60,
-                                  width: 60,
-                                  decoration: BoxDecoration(
-                                      color: Colors.blue,
-                                      borderRadius: BorderRadius.circular(30)),
-                                  child: Icon(
-                                    Icons.done,
-                                    size: 30,
-                                    color: Colors.white,
+                                  const SizedBox(width: 30),
+                                  Container(
+                                    height: 60,
+                                    width: 60,
+                                    decoration: BoxDecoration(
+                                        color: Colors.blue,
+                                        borderRadius:
+                                            BorderRadius.circular(30)),
+                                    child: const Icon(
+                                      Icons.done,
+                                      size: 30,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                )
-                              ],
-                            ),
-                          )
-                        : SizedBox()
-                  ],
-                ),
+                                ],
+                              ),
+                            )
+                          : const SizedBox();
+                    },
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Future<void> _showbuttomSheet() async {
+  Future<void> _showBottomSheet() async {
     return showModalBottomSheet<void>(
-        isScrollControlled: true,
-        constraints: BoxConstraints(maxHeight: 250),
-        context: context,
-        builder: (BuildContext context) {
-          return Center(
-              child: Column(
+      isScrollControlled: true,
+      constraints: const BoxConstraints(maxHeight: 250),
+      context: context,
+      builder: (BuildContext context) {
+        return Center(
+          child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(30),
+              const Padding(
+                padding: EdgeInsets.all(30),
                 child: Row(
                   children: [
                     Text(
@@ -191,28 +184,26 @@ class _ImagePickersState extends State<ImagePickers> {
                 ),
               ),
               ListTile(
-                onTap: () {
-                  pickImageByCamera();
-                },
-                leading: CircleAvatar(
+                onTap: pickImageByCamera,
+                leading: const CircleAvatar(
                     radius: 20,
                     backgroundColor: Colors.black12,
                     child: Icon(Icons.camera_alt)),
-                title: Text('Camera'),
+                title: const Text('Camera'),
               ),
-              Divider(),
+              const Divider(),
               ListTile(
-                onTap: () {
-                  pickImageByGallery();
-                },
-                leading: CircleAvatar(
+                onTap: pickImageByGallery,
+                leading: const CircleAvatar(
                     radius: 20,
                     backgroundColor: Colors.black12,
                     child: Icon(Icons.image_outlined)),
-                title: Text('Gallery'),
+                title: const Text('Gallery'),
               ),
             ],
-          ));
-        });
+          ),
+        );
+      },
+    );
   }
 }
